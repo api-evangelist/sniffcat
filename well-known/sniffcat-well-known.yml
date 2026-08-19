@@ -1,0 +1,87 @@
+generated: '2026-08-19'
+method: probed
+source: live GET probes of /.well-known/* on every apis.yml host
+summary: >-
+  SniffCat serves one real /.well-known document — an RFC 9116 security.txt — and it is served from
+  BOTH the marketing host (sniffcat.com) and the API host (api.sniffcat.com), with a Canonical field
+  pointing at the sniffcat.com copy. Every other well-known path probed returns a genuine 404 (the API
+  host answers with its own JSON error envelope, so these are real negatives, not SPA catch-alls).
+hosts:
+- host: sniffcat.com
+  probes:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    file: well-known/sniffcat-security.txt
+    document: true
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    document: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+  - path: /.well-known/agent.json
+    status: 404
+    document: false
+- host: api.sniffcat.com
+  probes:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    note: byte-identical to the sniffcat.com copy; Canonical points at sniffcat.com
+    document: true
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    document: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    document: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+  - path: /.well-known/agent.json
+    status: 404
+    document: false
+other_discovery:
+- path: /robots.txt
+  host: sniffcat.com
+  status: 200
+  note: >-
+    Disallows /api, /auth/local, /logout and /sample.csv on the marketing host; publishes two sitemaps
+    (sitemap.xml, sitemap-reports.xml). Does NOT disallow the documentation tree or api.sniffcat.com.
+- path: /manifest.json
+  host: sniffcat.com
+  status: 200
+  note: PWA web app manifest ("SniffCat Database", theme #223672).
+- path: /apis.json
+  host: sniffcat.com
+  status: 404
+  note: >-
+    Recorded because an earlier profile claimed an apis.json was advertised at this URL. It is not
+    served — the host returns a hard 404.
+absent:
+- openid-configuration
+- oauth-authorization-server
+- oauth-protected-resource
+- api-catalog
+- ai-plugin.json
+- agent-card.json
+- agent.json

@@ -1,0 +1,57 @@
+generated: '2026-08-19'
+method: searched
+source: https://sniffcat.com/
+summary: >-
+  SniffCat publishes a testing affordance, but it is a magic test IDENTIFIER rather than a separate
+  sandbox environment. There is no test host, no test-mode key prefix, no separate credential and no
+  fixture/trigger tooling: the same api.sniffcat.com host and the same X-Secret-Token are used, and
+  the provider designates one well-known address that can be exercised without polluting the live
+  database.
+mode:
+  separate_host: false
+  separate_credentials: false
+  key_prefix_convention: false
+  test_vs_live_switch: false
+  note: >-
+    Because there is no test-mode credential, a client cannot tell from the token whether it is
+    pointed at test or production — every call is production except for the designated test address.
+test_values:
+- kind: ip-address
+  value: 1.1.1.1
+  published_verbatim: true
+  quote: >-
+    "🧪 Testing Environment — Test your API integration safely in a sandbox without affecting the main
+    database. Try 1.1.1.1. 👀"
+  source: https://sniffcat.com/
+  usable_with:
+  - GET /api/v1/check?ip=1.1.1.1
+  - GET /api/v1/reports?ip=1.1.1.1
+  - POST /api/v1/report
+  human_view: https://sniffcat.com/reports/1.1.1.1
+  note: >-
+    1.1.1.1 is the Cloudflare public resolver and is on SniffCat's own whitelist, so reports against
+    it are absorbed rather than scored — that is what makes it safe to exercise.
+whitelist:
+  present: true
+  url: https://github.com/sefinek/trusted-ips-whitelist
+  description: >-
+    SniffCat maintains a public whitelist of known-good crawler and service IP ranges (Googlebot,
+    Bingbot, DuckDuckBot, YandexBot, UptimeRobot, Pingdom, Cloudflare, Bunny CDN, Stripe, Shodan and
+    others) that are automatically excluded from scoring. Useful as a test fixture: any address on
+    this list is safe to submit without affecting the database.
+  source: https://sniffcat.com/
+unauthenticated_probes:
+  description: >-
+    Two endpoints answer without a token and are the only way to smoke-test connectivity before
+    provisioning a credential.
+  endpoints:
+  - {url: 'https://api.sniffcat.com/', response: '{"success":true,"status":200,"version":"0.1.5"}'}
+  - {url: 'https://api.sniffcat.com/api/v1', response: '{"success":true,"status":200,"release":1}'}
+  method: probed
+  date: '2026-08-19'
+absent:
+- test-mode API keys
+- a dedicated sandbox host
+- request/response fixtures or trigger endpoints
+- time simulation / test clocks
+- a mock server or interactive API console

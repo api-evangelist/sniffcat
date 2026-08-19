@@ -1,0 +1,159 @@
+generated: '2026-08-19'
+method: searched
+source: >-
+  https://sniffcat.com/documentation/api and its five endpoint pages, plus live response-header
+  probes of https://api.sniffcat.com
+summary: >-
+  Cross-cutting runtime semantics for the SniffCat REST API, assembled from the published endpoint
+  reference and from headers observed on live calls. There is no OpenAPI to derive from, so every
+  row below is either quoted from the docs or observed on the wire; each carries its own source.
+base_url: https://api.sniffcat.com
+path_prefix: /api/v1
+versioning:
+  style: uri-path
+  current: v1
+  api_build_version: 0.1.5
+  api_build_source: 'GET https://api.sniffcat.com/ -> {"success":true,"status":200,"version":"0.1.5"}'
+  platform_version: 0.4.0
+  platform_version_source: https://sniffcat.com/ ("Version 0.4.0.")
+  release_marker: 'GET https://api.sniffcat.com/api/v1 -> {"success":true,"status":200,"release":1}'
+  media_type_versioning: false
+  header_versioning: false
+  note: >-
+    The API host root and the /api/v1 root are both callable ANONYMOUSLY and each returns a version
+    marker — a small but genuinely useful discovery affordance, and the only unauthenticated surface
+    on the API.
+authentication:
+  style: static token in a custom header
+  header: X-Secret-Token
+  detail: authentication/sniffcat-authentication.yml
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    SniffCat publishes no idempotency key, no request-replay contract and no safe-retry guidance. The
+    closest published behaviour is a DEDUPLICATION WINDOW, which is not the same thing: "The same IP
+    address can only be reported once every 20 minutes" (POST /api/v1/report), enforced with a 429.
+    A retried report inside that window is REJECTED rather than replayed idempotently, so a client
+    cannot distinguish "my first call succeeded" from "I am being throttled". Recorded as absent —
+    no Idempotency pointer is emitted for this provider.
+  dedup_window: 20 minutes per reported IP
+  dedup_source: https://sniffcat.com/documentation/api/report
+pagination:
+  style: page-number
+  applies_to:
+  - GET /api/v1/reports
+  params:
+  - name: page
+    default: 1
+    description: Page number.
+  - name: perPage
+    default: 32
+    max: 100
+    description: Results per page.
+  response_fields:
+  - total
+  - page
+  - count
+  - perPage
+  - lastPage
+  cursor: false
+  link_header: false
+  note: >-
+    GET /api/v1/blacklist is NOT paginated — it is capped by `limit` (10–100000, default 1000) and
+    ordered by abuse score descending. GET /api/v1/check caps embedded reports at 48 with no paging.
+filtering:
+  blacklist:
+  - {param: confidenceMin, type: number, required: true, range: 30-100}
+  - {param: limit, type: number, range: 10-100000, default: 1000}
+  - {param: ipVersion, type: number, values: [4, 6]}
+  - {param: includeCountries, type: csv, format: ISO 3166-1 alpha-2}
+  - {param: excludeCountries, type: csv, format: ISO 3166-1 alpha-2, conflicts_with: includeCountries}
+  - {param: categories, type: csv, max_values: 5, vocabulary: vocabulary/sniffcat-report-categories.yml}
+  reports:
+  - {param: ip, type: string, required: true}
+  - {param: maxAgeInDays, type: number, default: 30, max: 365}
+  check:
+  - {param: ip, type: string, required: true}
+  - {param: withReports, type: boolean-as-string, default: 'false', note: returns up to 48 unique reports}
+content_negotiation:
+  style: query-parameter
+  param: type
+  values:
+  - {value: txt, default: true, media: newline-delimited IP list, use: firewall/blocklist ingestion}
+  - {value: json, media: application/json}
+  accept_header_negotiation: false
+  applies_to:
+  - GET /api/v1/blacklist
+  note: >-
+    Format is chosen with `?type=`, not with an Accept header — worth knowing for any agent or HTTP
+    client that negotiates by media type.
+response_envelope:
+  shape: '{"success": <bool>, "status": <int>, ...payload}'
+  success_field: success
+  status_field: status
+  message_field: message
+  collection_field: reports
+  meta_field: meta
+  observed: true
+  note: >-
+    Every response, success or failure, repeats the HTTP status code inside the JSON body. Errors add
+    `message`; the blacklist collection adds `meta.generatedAt` and `meta.count`.
+error_semantics:
+  format: proprietary JSON envelope
+  rfc9457: false
+  content_type: application/json; charset=utf-8
+  detail: errors/sniffcat-problem-types.yml
+rate_limit_signaling:
+  headers:
+  - RateLimit
+  - RateLimit-Policy
+  spec: draft-ietf-httpapi-ratelimit-headers
+  retry_after: false
+  exhaustion_status: 429
+  observed: true
+  detail: rate-limits/sniffcat-rate-limits.yml
+caching:
+  headers_observed:
+  - ETag
+  - X-Cache
+  x_cache_values:
+  - HIT
+  - MISS
+  ttl: 25 minutes (production) / 2 seconds (development)
+  cache_key: SHA256 of the query parameters
+  quota_effect: cached responses do not count against the caller's quota
+  applies_to:
+  - GET /api/v1/blacklist
+  source: https://sniffcat.com/documentation/api/blacklist
+request_id_tracing:
+  supported: false
+  note: >-
+    No request-id / correlation-id header is documented or observed. The only per-request identifier
+    on the wire is Cloudflare's `cf-ray`, which is edge infrastructure rather than an API contract.
+security_headers_observed:
+- strict-transport-security: max-age=31536000; includeSubDomains; preload
+- x-content-type-options: nosniff
+- x-frame-options: SAMEORIGIN
+- referrer-policy: same-origin
+- cross-origin-opener-policy: same-origin
+- origin-agent-cluster: '?1'
+- x-permitted-cross-domain-policies: none
+- x-dns-prefetch-control: 'off'
+note_on_security_headers: >-
+  This is the Helmet.js default set, which is a reasonable baseline. No Content-Security-Policy and
+  no CORS Access-Control-Allow-Origin header were observed on API responses.
+data_conventions:
+  timestamps: ISO 8601 UTC with milliseconds (e.g. 2025-06-30T12:34:56.789Z)
+  countries: ISO 3166-1 alpha-2
+  ip_versions: [4, 6]
+  identifiers: MongoDB-style opaque string ids on report objects (`_id`)
+  scores: abuseConfidenceScore, integer 0-100
+  private_addresses: rejected with 422 (local/private ranges may not be checked or reported)
+cross_links:
+  authentication: authentication/sniffcat-authentication.yml
+  errors: errors/sniffcat-problem-types.yml
+  rate_limits: rate-limits/sniffcat-rate-limits.yml
+  lifecycle: lifecycle/sniffcat-lifecycle.yml
+  vocabulary: vocabulary/sniffcat-report-categories.yml
+  data_model: data-model/sniffcat-data-model.yml

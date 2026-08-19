@@ -1,0 +1,67 @@
+generated: '2026-08-19'
+method: searched
+source: https://sniffcat.com/documentation/categories
+summary: >-
+  SniffCat publishes a complete, stable, numerically identified abuse-category vocabulary — 27 terms
+  in 3 groups, each with an integer id, a severity weight and a definition. This is the controlled
+  vocabulary behind the `categories` field on POST /api/v1/report and the `categories` filter on
+  GET /api/v1/blacklist, and the severity weight is what feeds the abuse confidence score. It is the
+  strongest machine-consumable artifact SniffCat publishes, even though it is published as an HTML
+  table rather than as data.
+term_count: 27
+group_count: 3
+weight_range: [6, 17]
+usage:
+  report_field: categories (array of ids, or comma-separated string; at least one required)
+  filter_param: categories (comma-separated ids, maximum 5)
+  effect: >-
+    "Please note that categories affect the priority of reports." Each category carries a severity
+    weight that contributes to an IP's abuseConfidenceScore.
+  source: https://sniffcat.com/documentation
+groups:
+- id: 1
+  name: Infrastructure & Net
+  count: 9
+  terms:
+  - {id: 1, name: DNS Compromise, weight: 14, description: DNS records redirecting traffic to malicious IPs.}
+  - {id: 2, name: DNS Poisoning, weight: 13, description: Fake DNS responses poisoning the resolver's cache.}
+  - {id: 3, name: DDoS Attack, weight: 17, description: High-volume network traffic causing service unavailability via overload.}
+  - {id: 4, name: Port Scan, weight: 8, description: Scanning TCP/UDP ports to discover services or vulnerabilities.}
+  - {id: 5, name: Mass Scanner, weight: 10, description: Scanning multiple hosts or entire subnets.}
+  - {id: 6, name: Exploited Host, weight: 16, description: Host controlled by an attacker, actively used for abuse.}
+  - {id: 7, name: Malware Hosting, weight: 17, description: Server distributing malicious software or scripts.}
+  - {id: 8, name: C&C Beaconing, weight: 14, description: Communication with malware command-and-control (C2) infrastructure.}
+  - {id: 9, name: CryptoJacking, weight: 12, description: Using victim's system resources for unauthorized cryptocurrency mining.}
+- id: 2
+  name: Web & App
+  count: 7
+  terms:
+  - {id: 10, name: Phishing, weight: 17, description: Impersonating legitimate sites to steal personal or payment data.}
+  - {id: 11, name: Hacking, weight: 12, description: Attempts to gain access or escalate privileges.}
+  - {id: 12, name: SQL Injection, weight: 14, description: Injecting SQL queries via user input fields.}
+  - {id: 13, name: Command Injection, weight: 14, description: Executing system commands through a vulnerable backend.}
+  - {id: 14, name: Spam Activity, weight: 6, description: Automated generation of spam (forms, comments, messages, emails).}
+  - {id: 15, name: Bad Web Bot, weight: 7, description: Bot ignoring robots.txt or impersonating legitimate user-agents.}
+  - {id: 16, name: Path Traversal, weight: 13, description: Accessing system files outside the application directory (../).}
+- id: 3
+  name: Access & Abuse
+  count: 11
+  terms:
+  - {id: 17, name: Brute-Force, weight: 10, description: Mass login attempts to gain access to services.}
+  - {id: 18, name: SSH/SFTP, weight: 11, description: Unauthorized login attempts to SSH or SFTP.}
+  - {id: 19, name: FTP, weight: 9, description: Unauthorized login attempts to FTP server.}
+  - {id: 20, name: Email, weight: 8, description: IMAP/POP3 login errors possibly indicating intrusion attempts.}
+  - {id: 21, name: HTTP/HTTPS, weight: 9, description: Suspicious or malicious HTTP/S requests with unusual headers or payloads.}
+  - {id: 22, name: RDP, weight: 13, description: Unauthorized login to Remote Desktop Protocol.}
+  - {id: 23, name: Telnet, weight: 7, description: Unauthorized access to Telnet, commonly present in IoT devices.}
+  - {id: 24, name: SMB, weight: 12, description: Unauthorized login attempt to SMB file shares.}
+  - {id: 25, name: MongoDB, weight: 9, description: Unauthorized access attempt to a MongoDB instance.}
+  - {id: 26, name: Redis, weight: 8, description: Unauthorized login to an open Redis instance.}
+  - {id: 27, name: Other Abuse, weight: 7, description: Security-violating activity not covered by other categories.}
+gaps:
+- >-
+  Published only as an HTML table with an interactive id picker — there is no JSON, CSV or API
+  representation of the vocabulary, so every integrator has to hard-code or scrape these 27 ids.
+- >-
+  The relationship between a category weight and the resulting abuseConfidenceScore delta is not
+  documented, only asserted.

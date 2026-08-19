@@ -1,0 +1,142 @@
+generated: '2026-08-19'
+method: derived
+source: >-
+  derived from live probes of https://api.sniffcat.com and https://sniffcat.com plus the published
+  reference at https://sniffcat.com/documentation/api; no compliance or certification claims were
+  found anywhere on the provider's site
+summary: >-
+  SniffCat conforms to two cross-cutting web standards that were verified on the wire — RFC 9116
+  (security.txt) and the IETF draft RateLimit header fields — and uses ISO 3166-1 alpha-2 country
+  codes and ISO 8601 timestamps in its payloads. It conforms to none of the API description or
+  problem-format standards: no OpenAPI, no AsyncAPI, no JSON Schema, no RFC 9457. No security or
+  privacy certification is claimed (no SOC 2, ISO 27001, PCI DSS, GDPR statement or trust centre),
+  so NO Compliance pointer is emitted.
+standards:
+- id: rfc9116
+  name: security.txt
+  conforms: true
+  evidence:
+    url: https://sniffcat.com/.well-known/security.txt
+    status: 200
+    fields: [Canonical, Contact, Expires, Preferred-Languages]
+    note: >-
+      Served from both sniffcat.com and api.sniffcat.com, with a valid non-expired Expires
+      (2030-12-10). Missing the optional Policy, Encryption, Acknowledgments and Hiring fields.
+- id: ietf-ratelimit-headers
+  name: draft-ietf-httpapi-ratelimit-headers
+  conforms: true
+  evidence:
+    url: https://api.sniffcat.com/api/v1/check?ip=1.1.1.1
+    status: 403
+    headers:
+      RateLimit: limit=400, remaining=399, reset=120
+      RateLimit-Policy: 400;w=120
+    note: >-
+      Uses the modern single `RateLimit` field rather than the legacy X-RateLimit-* triplet. No
+      Retry-After on exhaustion was observed.
+- id: iso3166-1-alpha-2
+  name: ISO 3166-1 alpha-2 country codes
+  conforms: true
+  evidence:
+    url: https://sniffcat.com/documentation/api/blacklist
+    note: includeCountries / excludeCountries and the `country` / `reporterCountry` response fields.
+- id: iso8601
+  name: ISO 8601 / RFC 3339 timestamps
+  conforms: true
+  evidence:
+    url: https://sniffcat.com/documentation/api/blacklist
+    note: 'UTC with milliseconds, e.g. 2025-06-30T12:34:56.789Z'
+- id: rfc6797
+  name: HTTP Strict Transport Security
+  conforms: true
+  evidence:
+    header: 'strict-transport-security: max-age=31536000; includeSubDomains; preload'
+    hosts: [sniffcat.com, api.sniffcat.com]
+- id: openapi
+  name: OpenAPI Specification
+  conforms: false
+  evidence:
+    probed:
+    - {url: 'https://api.sniffcat.com/openapi.json', status: 404}
+    - {url: 'https://api.sniffcat.com/swagger.json', status: 404}
+    - {url: 'https://api.sniffcat.com/v1/openapi.json', status: 404}
+    - {url: 'https://api.sniffcat.com/api-docs', status: 404}
+    - {url: 'https://api.sniffcat.com/docs', status: 404}
+    - {url: 'https://api.sniffcat.com/redoc', status: 404}
+    - {url: 'https://sniffcat.com/openapi.json', status: 404}
+    - {url: 'https://sniffcat.com/swagger.json', status: 404}
+    note: >-
+      The reference is complete enough to describe every parameter and response, but it exists only
+      as HTML. The contract is undisclosed, not absent.
+- id: rfc9457
+  name: Problem Details for HTTP APIs
+  conforms: false
+  evidence:
+    note: >-
+      Errors use a proprietary {success,status,message} envelope with content-type application/json;
+      no type URI and no stable error code. See errors/sniffcat-problem-types.yml.
+- id: rfc8594
+  name: The Sunset HTTP Header Field
+  conforms: false
+  evidence:
+    note: No Sunset or Deprecation header, and no deprecation policy published.
+- id: oauth2
+  name: OAuth 2.0
+  conforms: false
+  evidence:
+    probed:
+    - {url: 'https://sniffcat.com/.well-known/oauth-authorization-server', status: 404}
+    - {url: 'https://api.sniffcat.com/.well-known/oauth-authorization-server', status: 404}
+    - {url: 'https://api.sniffcat.com/.well-known/oauth-protected-resource', status: 404}
+    note: Static X-Secret-Token header only.
+- id: oidc
+  name: OpenID Connect
+  conforms: false
+  evidence:
+    probed:
+    - {url: 'https://sniffcat.com/.well-known/openid-configuration', status: 404}
+    - {url: 'https://api.sniffcat.com/.well-known/openid-configuration', status: 404}
+- id: rfc9727
+  name: 'RFC 9727 api-catalog: a well-known URI'
+  conforms: false
+  evidence:
+    probed:
+    - {url: 'https://sniffcat.com/.well-known/api-catalog', status: 404}
+    - {url: 'https://api.sniffcat.com/.well-known/api-catalog', status: 404}
+- id: a2a
+  name: A2A Agent Card
+  conforms: false
+  evidence:
+    probed:
+    - {url: 'https://sniffcat.com/.well-known/agent-card.json', status: 404}
+    - {url: 'https://sniffcat.com/.well-known/agent.json', status: 404}
+    - {url: 'https://api.sniffcat.com/.well-known/agent-card.json', status: 404}
+    - {url: 'https://api.sniffcat.com/.well-known/agent.json', status: 404}
+- id: mcp
+  name: Model Context Protocol
+  conforms: false
+  evidence:
+    probed:
+    - {url: 'https://api.sniffcat.com/mcp', status: 404}
+    - {url: 'https://sniffcat.com/mcp', status: 404}
+- id: asyncapi
+  name: AsyncAPI
+  conforms: false
+  evidence:
+    note: >-
+      No event, streaming or webhook surface is documented anywhere on the site — the product is
+      request/response only. N/A rather than a failure.
+- id: json-schema
+  name: JSON Schema
+  conforms: false
+  evidence:
+    note: Response shapes are shown as JSON examples in HTML; no schema document is published.
+certifications:
+  claimed: []
+  note: >-
+    No SOC 2, ISO 27001, PCI DSS, HIPAA, FedRAMP, GDPR or CCPA statement was found. There is no
+    privacy policy (https://sniffcat.com/privacy -> 404) and no trust centre
+    (https://trust.sniffcat.com does not resolve). The site markets a privacy POSTURE
+    ("Privacy First. No telemetry, no tracking. Your queries stay private.") without a published
+    privacy policy to back it — a notable gap for a service whose whole product is a database of
+    IP addresses.

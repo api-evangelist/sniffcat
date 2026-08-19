@@ -1,0 +1,118 @@
+generated: '2026-08-19'
+method: searched
+source: >-
+  https://pypi.org/pypi/sniffcat/json, https://api.github.com/orgs/SniffCatDB/repos and
+  https://sniffcat.com/documentation/integrations
+summary: >-
+  SniffCat ships one registry-published client library — the Python `sniffcat` package, whose source
+  repo lives in the provider's own SniffCatDB GitHub org. Everything else the provider calls an
+  "integration" is a git-cloned Node.js/Shell reporting daemon, not a registry package: none of the
+  four official reporter tools is published to npm (all six candidate npm names return 404), so the
+  only version signal available is the version field in each repo's package.json plus the last commit
+  date. Recorded as `registry: github` with the real version, rather than omitted.
+official_registries_checked:
+- npm (registry.npmjs.org search + direct name lookups)
+- PyPI
+- RubyGems
+- crates.io
+- NuGet
+- Maven Central
+- pkg.go.dev / proxy.golang.org
+- Packagist
+packages:
+- name: sniffcat
+  language: python
+  registry: pypi
+  url: https://pypi.org/project/sniffcat/
+  repository: https://github.com/SniffCatDB/sniffcat.py
+  official: true
+  version: 0.1.8
+  published: '2025-09-02'
+  releases:
+  - 0.1.5
+  - 0.1.6
+  - 0.1.7
+  - 0.1.8
+  description: Python client for SniffCat API.
+  note: >-
+    First-party: the source repository sits inside the provider's own SniffCatDB GitHub org. The PyPI
+    metadata still carries an unfixed cookiecutter placeholder home_page
+    (https://github.com/yourusername/sniffcat.py). Last release 2025-09-02 — roughly a year behind the
+    API it wraps (api.sniffcat.com reports version 0.1.5 as of this probe) and behind the platform
+    (sniffcat.com advertises version 0.4.0), so the SDK is the stalest first-party surface here.
+- name: ufw-sniffcat-reporter
+  language: javascript
+  registry: github
+  url: https://github.com/SniffCatDB/UFW-SniffCat-Reporter
+  repository: https://github.com/SniffCatDB/UFW-SniffCat-Reporter
+  official: true
+  version: 0.5.1
+  published: '2026-08-18'
+  license: GPL-3.0
+  description: >-
+    Daemon (with installer) that tails UFW firewall logs in real time and reports offending IPs to
+    POST /api/v1/report.
+  note: >-
+    Not published to any registry — npm name `ufw-sniffcat-reporter` returns 404. Distributed by git
+    clone + `npm ci` + pm2. `version` read from package.json on the default branch; `published` is the
+    last commit date, since the repo publishes no tags or releases.
+- name: cf-waf-to-sniffcat
+  language: javascript
+  registry: github
+  url: https://github.com/SniffCatDB/Cloudflare-WAF-To-SniffCat
+  repository: https://github.com/SniffCatDB/Cloudflare-WAF-To-SniffCat
+  official: true
+  version: 1.11.0
+  published: '2026-08-18'
+  license: GPL-3.0
+  description: Node.js script that reports IPs blocked by Cloudflare WAF firewall events to SniffCat.
+  note: >-
+    Not on npm (`cloudflare-waf-to-sniffcat` 404). Git-clone distribution; version from package.json,
+    published date from the last commit — no tags or releases exist.
+- name: t-pot-to-sniffcat
+  language: javascript
+  registry: github
+  url: https://github.com/SniffCatDB/T-Pot-To-SniffCat
+  repository: https://github.com/SniffCatDB/T-Pot-To-SniffCat
+  official: true
+  version: 0.2.0
+  published: '2026-08-18'
+  license: GPL-3.0
+  description: Monitors T-Pot honeypot logs and auto-submits detected attacks as SniffCat reports.
+  note: >-
+    Not on npm. Git-clone distribution; version from package.json, published date from the last
+    commit — no tags or releases exist.
+- name: SniffCat-Fail2Ban
+  language: shell
+  registry: github
+  url: https://github.com/Rexikon/SniffCat-Fail2Ban
+  repository: https://github.com/Rexikon/SniffCat-Fail2Ban
+  official: false
+  version: null
+  published: '2026-02-25'
+  license: MIT
+  description: fail2ban action that forwards bans to the SniffCat API.
+  note: >-
+    Community integration, listed by SniffCat under "Community Integrations" but owned by a third
+    party (Rexikon). No registry, no tags, no version string — `version: null` is a checked gap;
+    `published` is the last push date.
+- name: SniffCat-cPanel
+  language: shell
+  registry: github
+  url: https://github.com/Rexikon/SniffCat-cPanel
+  repository: https://github.com/Rexikon/SniffCat-cPanel
+  official: false
+  version: null
+  published: '2026-02-25'
+  license: MIT
+  description: cPHulk (cPanel) integration that reports brute-force sources to SniffCat.
+  note: >-
+    Community integration owned by Rexikon, not SniffCat. Repo description still names the older
+    sniffcat.net domain. No registry, no tags, no version string.
+announced_not_published:
+- name: Suricata-To-SniffCat
+  url: https://github.com/SniffCatDB/Suricata-To-SniffCat
+  status: 404
+  note: >-
+    Listed on https://sniffcat.com/documentation/integrations as an official reporting tool marked
+    "coming soon"; the repository does not exist yet (GitHub API returns Not Found).

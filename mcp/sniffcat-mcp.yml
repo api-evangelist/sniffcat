@@ -1,0 +1,92 @@
+generated: '2026-08-19'
+method: derived
+source: >-
+  https://sniffcat.com/documentation/api and its five endpoint pages (there is no OpenAPI to derive
+  from — see conformance/sniffcat-conformance.yml)
+status: candidate
+published_by_provider: false
+summary: >-
+  SniffCat ships NO Model Context Protocol server, hosted or local. /mcp returns 404 on both
+  api.sniffcat.com and sniffcat.com; no MCP package exists on npm or PyPI; no MCP server is mentioned
+  anywhere in the docs, the SniffCatDB GitHub org, or the integrations page. The tool set below is a
+  CANDIDATE derived by API Evangelist from the provider's own published endpoint reference, offered
+  as a proposal. It is NOT published by SniffCat, so no MCPServer pointer is wired into apis.yml —
+  that pointer asserts the provider serves an agent surface, and SniffCat does not.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: api-key
+  verified: probed
+  note: >-
+    `auth: api-key` describes what a server WOULD need (the X-Secret-Token header), not an
+    authentication method on a server that exists.
+probes:
+- {url: 'https://api.sniffcat.com/mcp', status: 404, date: '2026-08-19'}
+- {url: 'https://sniffcat.com/mcp', status: 404, date: '2026-08-19'}
+- {url: 'https://registry.npmjs.org/sniffcat', status: 404, date: '2026-08-19'}
+- {url: 'https://registry.npmjs.org/@sniffcat/api', status: 404, date: '2026-08-19'}
+- {registry: 'npm search text=sniffcat', results: 0, date: '2026-08-19'}
+candidate_tools:
+- name: check_ip
+  maps_to: GET /api/v1/check
+  description: >-
+    Check whether an IP address has been reported and return its abuse confidence score, optionally
+    with up to 48 recent reports.
+  inputs:
+  - {name: ip, type: string, required: true}
+  - {name: withReports, type: boolean, required: false, default: false}
+  consequence: read-only
+- name: get_ip_reports
+  maps_to: GET /api/v1/reports
+  description: Return the paginated report history for a single IP address.
+  inputs:
+  - {name: ip, type: string, required: true}
+  - {name: maxAgeInDays, type: integer, required: false, default: 30, max: 365}
+  - {name: perPage, type: integer, required: false, default: 32, max: 100}
+  - {name: page, type: integer, required: false, default: 1}
+  consequence: read-only
+- name: get_blacklist
+  maps_to: GET /api/v1/blacklist
+  description: >-
+    Return reported IPs ordered by abuse score, filtered by confidence, IP version, country and
+    category — the blocklist feed.
+  inputs:
+  - {name: confidenceMin, type: integer, required: true, range: 30-100}
+  - {name: type, type: string, required: false, enum: [txt, json], default: txt}
+  - {name: limit, type: integer, required: false, range: 10-100000, default: 1000}
+  - {name: ipVersion, type: integer, required: false, enum: [4, 6]}
+  - {name: includeCountries, type: string, required: false, format: comma-separated ISO 3166-1 alpha-2}
+  - {name: excludeCountries, type: string, required: false, conflicts_with: includeCountries}
+  - {name: categories, type: string, required: false, max_values: 5, vocabulary: vocabulary/sniffcat-report-categories.yml}
+  consequence: read-only
+- name: report_ip
+  maps_to: POST /api/v1/report
+  description: >-
+    Submit an abuse report against an IP address with at least one category and a comment of ten
+    characters or more.
+  inputs:
+  - {name: ip, type: string, required: true}
+  - {name: categories, type: array, required: true, items: integer, vocabulary: vocabulary/sniffcat-report-categories.yml}
+  - {name: comment, type: string, required: true, min_length: 10}
+  consequence: write
+  escalation: >-
+    WRITE ACTION with community consequences — a report permanently affects a third party's public
+    reputation score and cannot be withdrawn through the API. Should require explicit human
+    confirmation before an agent calls it, and must never be called on private/local addresses
+    (422) or on whitelisted infrastructure.
+  throttle: one report per IP per 20 minutes
+not_yet_available:
+- name: bulk_report_ips
+  maps_to: POST /api/v1/bulk
+  reason: >-
+    Documented as "coming soon" — https://sniffcat.com/documentation/api/bulk has no parameters,
+    responses or errors. Not modelled.
+notes:
+- >-
+  Two endpoints (GET / and GET /api/v1) answer anonymously and return only version markers; they are
+  not worth exposing as tools.
+- >-
+  If SniffCat ever ships a real MCP server, this file should be REPLACED by a searched/probed
+  tools/list capture, not merged with it.

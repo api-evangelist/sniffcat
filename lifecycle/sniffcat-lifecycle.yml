@@ -1,0 +1,105 @@
+generated: '2026-08-19'
+method: searched
+source: >-
+  https://status.sniffcat.com/, https://sniffcat.com/, https://sniffcat.com/documentation/api and
+  https://sniffcat.com/terms-of-use
+summary: >-
+  SniffCat runs a real, third-party-hosted status page with per-day uptime history and an incident
+  archive, and it versions the API in the URI path. It publishes NO deprecation policy, NO Sunset or
+  Deprecation header contract (RFC 8594), NO SLA and NO changelog. The whole platform is
+  self-labelled "Early Access" / "open beta", which is itself the clearest lifecycle statement on the
+  site.
+maturity:
+  stage: beta
+  label: Early Access
+  evidence: >-
+    "Early Access" badge in the site header on every page; "🔧 Open Beta Testing — This platform is
+    new and still in the beta testing phase. Some features may be temporarily unavailable or work
+    with limited functionality."
+  platform_version: 0.4.0
+  api_version: 0.1.5
+versioning:
+  scheme: uri-path
+  current: v1
+  path: /api/v1
+  policy_published: false
+  breaking_change_policy: not published
+  note: >-
+    No statement of how long v1 will be supported, how a v2 would be introduced, or what counts as a
+    breaking change.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No deprecation policy exists, so no Deprecation pointer is emitted for this provider. One
+    endpoint is pre-announced rather than deprecated — POST /api/v1/bulk is documented with the body
+    "Soon" and marked "coming soon" on the API index.
+status_page:
+  present: true
+  url: https://status.sniffcat.com/
+  status: 200
+  provider: hosted status page (Statuspage-style)
+  components:
+  - name: SniffCat
+    monitors: [sniffcat.com]
+    state_at_probe: Operational
+    uptime: 99.990%
+  history: per-day operational/downtime history back to at least May 2026
+  incidents_section: true
+  maintenance_section: true
+  subscribe: 'yes ("Get in touch")'
+  machine_readable: false
+  machine_readable_note: >-
+    /summary.json, /api/v2/status.json and /history.json all return the HTML page rather than JSON,
+    so the status surface is human-readable only — an agent cannot poll it.
+  observed_incidents:
+  - {date: '2026-05-22', impact: 'down 2 minutes'}
+  - {date: '2026-05-31', impact: 'down 3 minutes'}
+  - {date: '2026-06-19', impact: 'down 5 minutes'}
+  probed: '2026-08-19'
+changelog:
+  present: false
+  probed:
+  - {url: 'https://sniffcat.com/changelog', status: 404}
+  - {url: 'https://sniffcat.com/blog', status: 404}
+  note: >-
+    No dated changelog or release notes. Version numbers appear only as bare strings on the homepage
+    and at the API root, with no record of what changed between them.
+sla:
+  published: false
+  note: >-
+    No SLA, uptime commitment or support-response commitment. The docs promise a best-effort "we
+    usually respond within 24 hours" on support tickets, which is a response expectation, not an SLA.
+support:
+  ticketing: https://sniffcat.com/tickets
+  email: support@sniffcat.com
+  community: https://discord.gg/S7NDzCzQTg
+  response_expectation: usually within 24 hours
+  note: The ticket system requires a login; the Discord invite and email are open.
+terms:
+  url: https://sniffcat.com/terms-of-use
+  status: 200
+  complete: false
+  note: >-
+    Self-labelled "This document has not yet been fully completed." Three usage rules only (report in
+    English, no spam/duplicate flooding, no UDP reports). No commercial, liability or data-retention
+    terms.
+roadmap:
+  page_published: false
+  announced_features:
+  - {feature: 'POST /api/v1/bulk (CSV bulk reporting)', status: coming soon, source: 'https://sniffcat.com/documentation/api/bulk'}
+  - {feature: Official firewall integrations for dynamic IP blocking, status: coming soon, source: 'https://sniffcat.com/documentation/integrations'}
+  - {feature: Suricata-To-SniffCat reporting module, status: coming soon, source: 'https://sniffcat.com/documentation/integrations'}
+  - {feature: Fake report detection, status: soon, source: 'https://sniffcat.com/'}
+  - {feature: 'Data export (JSON/CSV)', status: soon, source: 'https://sniffcat.com/'}
+  note: >-
+    These are scattered "coming soon" markers across the docs and homepage, not a roadmap page. No
+    Roadmap pointer is emitted, because there is no roadmap surface to point at.
+gaps:
+- No deprecation or sunset policy, and no RFC 8594 header contract.
+- No changelog or release notes, so version 0.1.5 -> 0.4.0 movement is unexplained.
+- Status page is human-only — no JSON/RSS feed an agent or monitor can consume.
+- Terms of Use explicitly incomplete.

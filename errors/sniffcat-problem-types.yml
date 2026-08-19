@@ -1,0 +1,120 @@
+generated: '2026-08-19'
+method: searched
+source: >-
+  The "Possible Errors" table on each of https://sniffcat.com/documentation/api/blacklist, /check,
+  /reports and /report, plus a live 403 observed on https://api.sniffcat.com/api/v1/check
+format: proprietary-json
+rfc9457: false
+content_type: application/json; charset=utf-8
+summary: >-
+  SniffCat documents an explicit per-endpoint error table but does NOT use RFC 9457
+  application/problem+json. Errors reuse the same envelope as success responses — `success:false`,
+  the HTTP status repeated in a `status` field, and a human-readable `message` — with NO stable
+  machine-readable error CODE or type URI. An agent can branch on the HTTP status but must string-match
+  `message` to tell two same-status failures apart (for example a 403 for a missing token versus a 403
+  for a role with no quota), which is the main error-semantics gap on this API.
+envelope:
+  example: '{"success":false,"status":403,"message":"Missing API token in request headers."}'
+  fields:
+  - {name: success, type: boolean, always: false on error}
+  - {name: status, type: integer, note: duplicates the HTTP status code}
+  - {name: message, type: string, note: human-readable; not a stable identifier}
+  machine_code_field: null
+  type_uri_field: null
+  detail_field: null
+  instance_field: null
+problem_types:
+- status: 400
+  title: Invalid query parameters
+  endpoints: [GET /api/v1/blacklist]
+  remediation: >-
+    Check confidenceMin is present and between 30 and 100, limit is 10-100000, ipVersion is 4 or 6,
+    categories names at most 5 ids, and that includeCountries and excludeCountries are not both set.
+  source: https://sniffcat.com/documentation/api/blacklist
+- status: 400
+  title: Missing ip parameter in request
+  endpoints: [GET /api/v1/check]
+  remediation: Supply the required `ip` query parameter.
+  source: https://sniffcat.com/documentation/api/check
+- status: 400
+  title: Missing ip parameter or invalid query format
+  endpoints: [GET /api/v1/reports]
+  remediation: Supply `ip`; verify maxAgeInDays <= 365, perPage <= 100 and page >= 1.
+  source: https://sniffcat.com/documentation/api/reports
+- status: 400
+  title: Missing data or invalid request body format
+  endpoints: [POST /api/v1/report]
+  remediation: Send a JSON body with content-type application/json.
+  source: https://sniffcat.com/documentation/api/report
+- status: 403
+  title: Missing API token in request headers
+  endpoints: [all]
+  message: Missing API token in request headers.
+  method: probed
+  remediation: Send the X-Secret-Token header. Generate a token at https://sniffcat.com/api.
+  source: 'live probe: GET https://api.sniffcat.com/api/v1/check?ip=1.1.1.1'
+- status: 403
+  title: No quota assigned to the role
+  endpoints: [GET /api/v1/blacklist]
+  remediation: >-
+    The account's combined roles grant 0 daily calls for this operation (for example the Individual
+    role grants 0 blacklist calls). Request a role that carries a blacklist allowance.
+  source: https://sniffcat.com/documentation/api/blacklist
+- status: 403
+  title: No limits configured for this role
+  endpoints: [GET /api/v1/check]
+  remediation: Same cause as above, for the /check meter.
+  source: https://sniffcat.com/documentation/api/check
+- status: 404
+  title: IP not found in the database
+  endpoints: [GET /api/v1/reports]
+  remediation: >-
+    The IP has never been reported. Note the asymmetry — /check returns a 200 with a score for an
+    unreported IP, while /reports 404s.
+  source: https://sniffcat.com/documentation/api/reports
+- status: 422
+  title: Query targets a local or private address
+  endpoints: [GET /api/v1/reports]
+  remediation: Only publicly routable addresses may be queried. Filter RFC 1918 / RFC 4193 ranges client-side.
+  source: https://sniffcat.com/documentation/api/reports
+- status: 422
+  title: 'Missing fields: ip, categories or comment'
+  endpoints: [POST /api/v1/report]
+  remediation: All three body fields are mandatory; comment must be at least 10 characters.
+  source: https://sniffcat.com/documentation/api/report
+- status: 422
+  title: Invalid or local IP address
+  endpoints: [POST /api/v1/report]
+  remediation: Report only publicly routable addresses.
+  source: https://sniffcat.com/documentation/api/report
+- status: 429
+  title: Rate limit exceeded
+  endpoints: [GET /api/v1/blacklist, GET /api/v1/check, GET /api/v1/reports]
+  remediation: >-
+    Read the `RateLimit` response field for `reset`. Daily role quotas reset at 00:00 UTC. Cached
+    blacklist responses (X-Cache: HIT) do not consume quota.
+  source: https://sniffcat.com/documentation/api/blacklist
+- status: 429
+  title: Submission rate limit exceeded or repeated report for the same IP
+  endpoints: [POST /api/v1/report]
+  remediation: >-
+    Two distinct causes share one status and no code distinguishes them: the daily report quota, or
+    the 20-minute per-IP deduplication window.
+  source: https://sniffcat.com/documentation/api/report
+- status: 500
+  title: Server error
+  endpoints: [all]
+  remediation: Retry with backoff; check https://status.sniffcat.com.
+  source: https://sniffcat.com/documentation/api/blacklist
+- status: 500
+  title: Server error or missing rate limit configuration
+  endpoints: [GET /api/v1/reports, POST /api/v1/report]
+  remediation: >-
+    A missing server-side rate-limit configuration surfaces as a 500 rather than a 4xx — report it
+    via https://sniffcat.com/tickets.
+  source: https://sniffcat.com/documentation/api/reports
+gaps:
+- No stable machine-readable error code or type URI; clients must match on HTTP status + prose.
+- Two different 403 causes and two different 429 causes are indistinguishable without string matching.
+- No RFC 9457 application/problem+json representation.
+- No documented 401 — an absent credential returns 403, not 401.

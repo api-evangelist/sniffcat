@@ -1,0 +1,44 @@
+generated: '2026-08-19'
+method: searched
+source: https://sniffcat.com/ and https://sniffcat.com/documentation/roles
+plan_count: 0
+pricing_model: free
+currency: null
+summary: >-
+  SniffCat publishes NO priced plans. There is no /pricing page (probed, 404), no paid tier, no
+  overage schedule and no enterprise contact-sales form. The homepage states the commercial position
+  explicitly — "No Hidden Costs: Use SniffCat with no surprises: no charges for core features, no
+  sudden limits, no hidden conditions" — and the API is marketed as "Use Our Free API". What looks
+  like tiering is NOT commercial: entitlement is granted through ROLES (Individual, Early User,
+  Webmaster, Contributor, SniffCat Enthusiast, Hosting Provider, ISP, Security Researcher, Law
+  Enforcement), which are assigned on trust/identity rather than purchased, and which raise daily
+  quotas additively. Those quotas are captured in rate-limits/sniffcat-rate-limits.yml, not here,
+  because they carry no price.
+plans: []
+evidence:
+- url: https://sniffcat.com/pricing
+  status: 404
+  note: No pricing page exists.
+- url: https://sniffcat.com/
+  status: 200
+  note: '"No Hidden Costs" and "Use Our Free API" sections; platform labelled Early Access / open beta.'
+- url: https://sniffcat.com/documentation/roles
+  status: 200
+  note: >-
+    The role matrix — the only entitlement ladder SniffCat publishes. Roles are trust levels, not
+    price points; the page never mentions cost.
+- url: https://sniffcat.com/terms-of-use
+  status: 200
+  note: >-
+    Terms of Use is three bullet points and is self-labelled "This document has not yet been fully
+    completed." No commercial terms, SLA or billing language.
+entitlement_model:
+  type: role-based
+  purchased: false
+  self_serve: true
+  signup: https://sniffcat.com/register
+  token_issue: https://sniffcat.com/api
+  note: >-
+    An account is created at /register, then an API token (X-Secret-Token) is generated from the
+    authenticated /api page. Roles beyond the default appear to be granted by the operator rather
+    than self-selected; the docs do not state the request process.

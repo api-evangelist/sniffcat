@@ -1,0 +1,138 @@
+generated: '2026-08-19'
+method: searched
+source: >-
+  Response examples and parameter tables on https://sniffcat.com/documentation/api/blacklist, /check,
+  /reports and /report, plus https://sniffcat.com/documentation/categories and
+  https://sniffcat.com/documentation/roles
+summary: >-
+  Entity graph reconstructed from the published response examples. There is no OpenAPI to derive
+  $ref links from, so relationships are inferred from the id/reference FIELDS that appear in the
+  documented payloads. Field types come from the parameter tables where they are stated and from the
+  example values otherwise; that distinction is recorded per field.
+entities:
+- name: IpAddress
+  description: >-
+    The central entity. Not returned as a standalone object — it is the subject that /check, /reports
+    and /blacklist all answer about, keyed by the dotted or colon-delimited address itself.
+  key: ip
+  fields:
+  - {name: ip, type: string, note: 'IPv4 or IPv6; private/local ranges rejected with 422'}
+  - {name: abuseConfidenceScore, type: integer, range: 0-100, source: GET /api/v1/check}
+  - {name: abuse, type: integer, note: 'same score, named `abuse` in the blacklist projection'}
+  - {name: country, type: string, format: ISO 3166-1 alpha-2}
+  - {name: lastReport, type: string, format: ISO 8601}
+  - {name: categories, type: 'array<integer>', note: 'aggregated category ids across all reports'}
+  human_url_template: https://sniffcat.com/reports/{ip}
+- name: Report
+  description: A single abuse submission made by one user against one IP address.
+  key: _id
+  fields:
+  - {name: _id, type: string, note: 'MongoDB-style opaque id; appears only in GET /api/v1/reports'}
+  - {name: username, type: string, note: 'reporter handle in GET /api/v1/reports'}
+  - {name: author, type: string, note: 'same value, named `author` in the GET /api/v1/check projection'}
+  - {name: categories, type: 'array<integer>', references: ReportCategory.id, min_items: 1}
+  - {name: comment, type: string, min_length: 10}
+  - {name: reporterCountry, type: string, format: ISO 3166-1 alpha-2}
+  - {name: date, type: string, format: ISO 8601}
+  created_by: POST /api/v1/report
+  note: >-
+    The same logical entity is projected under two different field names depending on endpoint
+    (`username` vs `author`, and `_id` is present in one projection and absent from the other) — a
+    consistency gap a machine-readable contract would have surfaced.
+- name: ReportCategory
+  description: Controlled abuse-classification term with a severity weight.
+  key: id
+  fields:
+  - {name: id, type: integer, range: 1-27}
+  - {name: name, type: string}
+  - {name: weight, type: integer, range: 6-17}
+  - {name: description, type: string}
+  - {name: group, type: integer, values: [1, 2, 3]}
+  vocabulary: vocabulary/sniffcat-report-categories.yml
+- name: CategoryGroup
+  description: Top-level grouping of report categories.
+  key: id
+  fields:
+  - {name: id, type: integer, values: [1, 2, 3]}
+  - {name: name, type: string, values: ['Infrastructure & Net', 'Web & App', 'Access & Abuse']}
+  - {name: count, type: integer}
+- name: User
+  description: >-
+    The reporting account. Never returned as an object by the public API — only its `username` /
+    `author` handle and `reporterCountry` leak into report payloads. Roles and quotas are described
+    in the docs but not exposed through any endpoint.
+  key: username
+  fields:
+  - {name: username, type: string}
+  - {name: reporterCountry, type: string, format: ISO 3166-1 alpha-2}
+  - {name: roles, type: 'array<Role>', exposed_via_api: false}
+- name: Role
+  description: >-
+    Trust/entitlement grant. Sets the additive daily quota for each metered operation and weights
+    the impact of that user's reports on an IP's abuse score.
+  key: name
+  fields:
+  - {name: name, type: string}
+  - {name: trust_level, type: number, range: 1-1.83}
+  - {name: limits, type: object, note: 'per-operation daily quotas'}
+  exposed_via_api: false
+  detail: rate-limits/sniffcat-rate-limits.yml
+- name: BlacklistPage
+  description: A cached, score-ordered projection of IpAddress used for blocklist ingestion.
+  fields:
+  - {name: meta.generatedAt, type: string, format: ISO 8601}
+  - {name: meta.count, type: integer}
+  - {name: reports, type: 'array<IpAddress projection>'}
+  note: >-
+    Confusingly, the array of IP summaries is named `reports` even though its members are IP
+    aggregates, not Report objects.
+relationships:
+- from: IpAddress
+  to: Report
+  type: has_many
+  via: ip (query key)
+  evidence: 'GET /api/v1/reports?ip='
+- from: Report
+  to: ReportCategory
+  type: has_many
+  via: categories
+  evidence: 'categories: [1, 2]'
+- from: Report
+  to: User
+  type: belongs_to
+  via: username / author
+  evidence: GET /api/v1/reports
+- from: ReportCategory
+  to: CategoryGroup
+  type: belongs_to
+  via: group
+  evidence: https://sniffcat.com/documentation/categories
+- from: User
+  to: Role
+  type: has_many
+  via: roles (additive)
+  evidence: https://sniffcat.com/documentation/roles
+- from: BlacklistPage
+  to: IpAddress
+  type: has_many
+  via: reports[] projection
+  evidence: GET /api/v1/blacklist
+derived_values:
+- name: abuseConfidenceScore
+  inputs:
+  - Report.categories -> ReportCategory.weight
+  - reporting User -> Role.trust_level
+  - report recency
+  documented: partially
+  note: >-
+    The docs assert that category weight affects report priority and that role trust level affects
+    report impact, but publish no formula. POST /api/v1/report returns `previousScore`, the new
+    `abuseConfidenceScore` and the `delta`, which is the only observable of the scoring function.
+id_conventions:
+  primary: 'the IP address string itself for IpAddress; opaque MongoDB-style `_id` for Report'
+  prefixes: none
+  uuid: false
+gaps:
+- No schema document of any kind; every field type above is read from prose or from an example value.
+- Field naming is inconsistent across projections (`author`/`username`, `abuse`/`abuseConfidenceScore`).
+- User and Role are documented but have no API representation, so an agent cannot read its own quota.

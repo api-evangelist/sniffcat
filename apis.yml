@@ -1,12 +1,38 @@
+aid: sniffcat
 name: SniffCat
-description: >-
-  Privacy-focused IP abuse database and OSINT threat-intelligence platform for reporting and checking malicious IPs in
-  real-time. Positioned as an AbuseIPDB-style community IP reputation service with a free, versioned REST API.
+description: 'SniffCat is a privacy-focused IP abuse database and OSINT threat-intelligence platform built
+  by Polish developer Sefinek, positioned as a community-moderated AbuseIPDB alternative. Sysadmins, hosting
+  providers, ISPs and security researchers report malicious IP addresses against a published 27-term abuse-category
+  vocabulary, and consume the resulting reputation data through a free, versioned REST API at api.sniffcat.com:
+  abuse-confidence lookups, per-IP report history, and score-ordered blocklist feeds in JSON or plain
+  text for direct firewall ingestion. Entitlement is role-based rather than paid, with published daily
+  quotas per operation and trust levels that weight how much each reporter moves an IP''s score. The platform
+  is in Early Access / open beta and publishes no machine-readable contract.'
 url: https://sniffcat.apievangelist.com/apis.yml
 created: '2026-08-19'
 modified: '2026-08-19'
 specificationVersion: '0.21'
 tags:
+- threat-intelligence
+- ip-reputation
+- abuse-database
+- cybersecurity
+- osint
+- network-security
+- sysadmin-tools
+- blocklist
+- abuse-reporting
+- ip-blocklist
+- ip-intelligence
+- threat-feeds
+apis:
+- name: SniffCat REST API
+  description: Documented, versioned REST API (/api/v1/*) for checking IPs, retrieving blacklist feeds
+    and report history, and submitting abuse reports. Uses X-Secret-Token header authentication with role-based
+    rate limits.
+  humanURL: https://sniffcat.com/documentation/api
+  baseURL: https://api.sniffcat.com
+  tags:
   - threat-intelligence
   - ip-reputation
   - abuse-database
@@ -15,34 +41,133 @@ tags:
   - network-security
   - sysadmin-tools
   - blocklist
-apis:
-  - name: SniffCat REST API
-    description: >-
-      Documented, versioned REST API (/api/v1/*) for checking IPs, retrieving blacklist feeds and report history, and
-      submitting abuse reports. Uses X-Secret-Token header authentication with role-based rate limits.
-    humanURL: https://sniffcat.com/documentation/api
-    baseURL: https://api.sniffcat.com
-    tags:
-      - threat-intelligence
-      - ip-reputation
-      - abuse-database
-      - cybersecurity
-      - osint
-      - network-security
-      - sysadmin-tools
-      - blocklist
-    properties:
-      - type: Documentation
-        url: https://sniffcat.com/documentation/api
-      - type: Documentation
-        url: https://sniffcat.com/documentation
-      - type: Documentation
-        url: https://sniffcat.com/documentation/categories
+  properties:
+  - type: Documentation
+    url: https://sniffcat.com/documentation
+  - type: APIReference
+    url: https://sniffcat.com/documentation/api
+  - type: GettingStarted
+    url: https://sniffcat.com/documentation/api
+  - type: Authentication
+    url: authentication/sniffcat-authentication.yml
+  - type: Conventions
+    url: conventions/sniffcat-conventions.yml
+  - type: ErrorCatalog
+    url: errors/sniffcat-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/sniffcat-rate-limits.yml
+  - type: DataModel
+    url: data-model/sniffcat-data-model.yml
+  - type: Vocabulary
+    url: vocabulary/sniffcat-report-categories.yml
+  - type: Sandbox
+    url: sandbox/sniffcat-sandbox.yml
+  x-evidence:
+    verified: '2026-08-19'
+    method: live probe + published reference
+    docs: https://sniffcat.com/documentation/api documents five endpoints with full parameter, response
+      and error tables.
+    endpoint_check: GET https://api.sniffcat.com/ -> 200 {"success":true,"status":200,"version":"0.1.5"};
+      GET https://api.sniffcat.com/api/v1/check?ip=1.1.1.1 -> 403 "Missing API token in request headers."
+      with live RateLimit headers.
+    machine_readable_contract: none published (openapi.json/swagger.json/api-docs/redoc all 404 on api.sniffcat.com
+      and sniffcat.com)
 maintainers:
-  - FN: Sefinek
-    url: https://sniffcat.com/
+- FN: Sefinek
+  email: support@sniffcat.com
+  url: https://sefinek.net
 generated:
   by: apis.io/add
   model: claude-opus-4-8
   confidence: 88
   at: '2026-08-19T02:43:05.010Z'
+common:
+- type: VulnerabilityDisclosure
+  url: security/sniffcat-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/sniffcat-domain-security.yml
+- type: DeveloperPortal
+  url: https://sniffcat.com/documentation
+- type: Documentation
+  url: https://sniffcat.com/documentation
+- type: APIReference
+  url: https://sniffcat.com/documentation/api
+- type: GettingStarted
+  url: https://sniffcat.com/documentation/api
+- type: Support
+  url: https://sniffcat.com/tickets
+- type: HelpCenter
+  url: https://discord.gg/S7NDzCzQTg
+- type: GitHubOrganization
+  url: https://github.com/SniffCatDB
+- type: SignUp
+  url: https://sniffcat.com/register
+- type: Login
+  url: https://sniffcat.com/login
+- type: TermsOfService
+  url: https://sniffcat.com/terms-of-use
+- type: StatusPage
+  url: https://status.sniffcat.com/
+- type: Integrations
+  url: https://sniffcat.com/documentation/integrations
+- type: Lifecycle
+  url: lifecycle/sniffcat-lifecycle.yml
+- type: Authentication
+  url: authentication/sniffcat-authentication.yml
+- type: Conventions
+  url: conventions/sniffcat-conventions.yml
+- type: ErrorCatalog
+  url: errors/sniffcat-problem-types.yml
+- type: RateLimits
+  url: rate-limits/sniffcat-rate-limits.yml
+- type: Plans
+  url: plans/sniffcat-plans-pricing.yml
+- type: Packages
+  url: packages/sniffcat-packages.yml
+- type: SDKs
+  url: packages/sniffcat-packages.yml
+- type: Vocabulary
+  url: vocabulary/sniffcat-report-categories.yml
+- type: DataModel
+  url: data-model/sniffcat-data-model.yml
+- type: Sandbox
+  url: sandbox/sniffcat-sandbox.yml
+- type: Conformance
+  url: conformance/sniffcat-conformance.yml
+- type: WellKnown
+  url: well-known/sniffcat-well-known.yml
+- type: SecurityTxt
+  url: well-known/sniffcat-security.txt
+- type: Security
+  url: security/sniffcat-vulnerability-disclosure.yml
+- type: LLMsTxt
+  url: llms/sniffcat-llms.txt
+image: https://sniffcat.com/images/og-preview.jpg
+x-enrichment:
+  date: '2026-08-19'
+  status: enriched
+  artifacts_added: 17
+  pass: local-v1
+x-evidence:
+  round: '2026-08-19'
+  admitted_from: Add-API gate auto-publish 2026-08-19 02:45 UTC, confidence 88.
+  slug: No rename needed — sniffcat.com already yields sniffcat under the domain rule.
+  split_surface:
+    api.sniffcat.com: root 200 returning {"success":true,"status":200,"version":"0.1.5"}, invented path
+      404 — discriminates. /api/v1 is the real surface.
+    sniffcat.com: USER-AGENT FILTERED, not blocked. A default curl/SDK/agent UA gets a 5,511b Cloudflare
+      "Attention Required" 403. The same URL with an ordinary Chrome UA returns 200 — the API documentation
+      page is 10,853b of real HTML. Any agent, SDK or crawler sending its own UA is refused; a browser
+      is not. An agent-readiness gap, and cheap for them to close.
+    no_llms_txt: 'Established only after the UA correction: with a browser UA, /llms.txt and /openapi.json
+      both return honest 404s. The 403 had masked their absence.'
+  no_openapi: None published on either host. The pipeline deliberately derived none — there is no openapi/
+    directory here.
+  no_mcp_server_and_none_claimed: 'mcp/sniffcat-mcp.yml is status: candidate, published_by_provider: false.
+    It records that /mcp 404s on both hosts, no MCP package exists on npm or PyPI, and no MCP server appears
+    in the docs or the GitHub org. The tool set in it is an API Evangelist PROPOSAL and no MCPServer pointer
+    is wired, because that pointer would assert an agent surface SniffCat does not serve.'
+  correction: 'I first checked github.com/sniffcat — an org with 0 public repos — and concluded there
+    was no ecosystem. Wrong org. The real one is github.com/SniffCatDB: 4 repos including a Python SDK
+    (sniffcat.py) and three integration tools (Cloudflare-WAF-To-SniffCat, T-Pot-To-SniffCat, UFW-SniffCat-Reporter),
+    all pushed 2026-08-18.'

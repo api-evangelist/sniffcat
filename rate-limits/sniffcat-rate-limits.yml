@@ -1,0 +1,170 @@
+generated: '2026-08-19'
+method: searched
+source: https://sniffcat.com/documentation/roles
+probe:
+  url: https://api.sniffcat.com/api/v1/check?ip=1.1.1.1
+  date: '2026-08-19'
+  status: 403
+  note: >-
+    Unauthenticated probe (no X-Secret-Token). The 403 still carried live rate-limit headers, so the
+    header names, format and the anonymous edge budget below are OBSERVED, not read from docs.
+summary: >-
+  SniffCat publishes a complete per-role daily quota matrix — five separately metered operations
+  (report, bulk, check, reports, blacklist), a base allowance every account gets, and nine additive
+  role allowances on top. It also emits the IETF draft `RateLimit` / `RateLimit-Policy` header fields
+  on every response, including error responses, which is the runtime signal an agent actually needs.
+limit_count: 51
+# 10 quota rows (base + 9 roles) x 5 metered operations = 50 documented daily limits,
+# plus 1 probed 400-req/120s edge window on api.sniffcat.com.
+scheme:
+  model: additive
+  description: >-
+    Effective limit for an operation = base account limit + the limit contributed by every role the
+    user holds. Users may hold multiple roles simultaneously.
+  window: daily
+  reset: '00:00 UTC'
+  exhaustion_status: 429
+  scope: per-account (token-bound), metered per operation
+headers:
+  observed: true
+  fields:
+  - name: RateLimit
+    example: limit=400, remaining=399, reset=120
+    spec: draft-ietf-httpapi-ratelimit-headers (RateLimit field, list-of-quota-policy form)
+  - name: RateLimit-Policy
+    example: 400;w=120
+    spec: draft-ietf-httpapi-ratelimit-headers (RateLimit-Policy)
+  retry_after: not observed
+  legacy_x_ratelimit: false
+  note: >-
+    The values observed anonymously (400 requests / 120 second window) are the edge/abuse budget on
+    api.sniffcat.com, NOT a documented plan tier. The documented per-role daily quotas below are a
+    separate, additional meter.
+limits:
+- scope: base-account
+  role: Base Limits
+  window: daily
+  operations:
+    report: 3000
+    bulk: 15
+    check: 1000
+    reports: 400
+    blacklist: 7
+  note: Granted to every account before role contributions are added.
+- scope: role
+  role: Individual
+  trust_level: 1
+  window: daily
+  operations:
+    report: 0
+    bulk: 0
+    check: 0
+    reports: 0
+    blacklist: 0
+- scope: role
+  role: Early User
+  trust_level: 1.19
+  window: daily
+  operations:
+    report: 800
+    bulk: 0
+    check: 100
+    reports: 0
+    blacklist: 1
+- scope: role
+  role: Webmaster
+  trust_level: 1.24
+  window: daily
+  operations:
+    report: 3000
+    bulk: 5
+    check: 3500
+    reports: 600
+    blacklist: 3
+- scope: role
+  role: Contributor
+  trust_level: 1.36
+  window: daily
+  operations:
+    report: 2000
+    bulk: 7
+    check: 1400
+    reports: 250
+    blacklist: 5
+- scope: role
+  role: SniffCat Enthusiast
+  trust_level: 1.48
+  window: daily
+  operations:
+    report: 3500
+    bulk: 4
+    check: 1000
+    reports: 500
+    blacklist: 3
+- scope: role
+  role: Hosting Provider
+  trust_level: 1.54
+  window: daily
+  operations:
+    report: 3000
+    bulk: 12
+    check: 2000
+    reports: 700
+    blacklist: 20
+- scope: role
+  role: ISP
+  trust_level: 1.62
+  window: daily
+  operations:
+    report: 2500
+    bulk: 20
+    check: 4000
+    reports: 2000
+    blacklist: 30
+- scope: role
+  role: Security Researcher
+  trust_level: 1.75
+  window: daily
+  operations:
+    report: 1800
+    bulk: 15
+    check: 2200
+    reports: 2500
+    blacklist: 8
+- scope: role
+  role: Law Enforcement
+  trust_level: 1.83
+  window: daily
+  operations:
+    report: 2500
+    bulk: 10
+    check: 5000
+    reports: 3500
+    blacklist: 0
+- scope: per-endpoint
+  role: any
+  window: '120 seconds'
+  limit: 400
+  operations: {}
+  method: probed
+  note: >-
+    Observed anonymously on api.sniffcat.com via RateLimit-Policy `400;w=120`. Applies at the edge
+    regardless of token.
+non_counting:
+- rule: Cached blacklist responses do not count toward the API usage quota.
+  evidence: https://sniffcat.com/documentation/api/blacklist
+  signal_header: 'X-Cache: HIT | MISS'
+  ttl: 25 minutes (production) / 2 seconds (development)
+  cache_key: SHA256 hash of the query parameters
+submission_throttles:
+- rule: The same IP address may only be reported once every 20 minutes.
+  endpoint: POST /api/v1/report
+  status_on_violation: 429
+  evidence: https://sniffcat.com/documentation/api/report
+gaps:
+- >-
+  No Retry-After header was observed, so a client that trips the 429 has to fall back to the
+  `reset` value in the RateLimit field.
+- >-
+  The docs do not state whether the daily role quotas are also surfaced in response headers, or only
+  the 120-second edge window that was observed.
