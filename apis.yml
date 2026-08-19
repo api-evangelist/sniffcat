@@ -1,0 +1,48 @@
+name: SniffCat
+description: >-
+  Privacy-focused IP abuse database and OSINT threat-intelligence platform for reporting and checking malicious IPs in
+  real-time. Positioned as an AbuseIPDB-style community IP reputation service with a free, versioned REST API.
+url: https://sniffcat.apievangelist.com/apis.yml
+created: '2026-08-19'
+modified: '2026-08-19'
+specificationVersion: '0.21'
+tags:
+  - threat-intelligence
+  - ip-reputation
+  - abuse-database
+  - cybersecurity
+  - osint
+  - network-security
+  - sysadmin-tools
+  - blocklist
+apis:
+  - name: SniffCat REST API
+    description: >-
+      Documented, versioned REST API (/api/v1/*) for checking IPs, retrieving blacklist feeds and report history, and
+      submitting abuse reports. Uses X-Secret-Token header authentication with role-based rate limits.
+    humanURL: https://sniffcat.com/documentation/api
+    baseURL: https://api.sniffcat.com
+    tags:
+      - threat-intelligence
+      - ip-reputation
+      - abuse-database
+      - cybersecurity
+      - osint
+      - network-security
+      - sysadmin-tools
+      - blocklist
+    properties:
+      - type: Documentation
+        url: https://sniffcat.com/documentation/api
+      - type: Documentation
+        url: https://sniffcat.com/documentation
+      - type: Documentation
+        url: https://sniffcat.com/documentation/categories
+maintainers:
+  - FN: Sefinek
+    url: https://sniffcat.com/
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 88
+  at: '2026-08-19T02:43:05.010Z'
