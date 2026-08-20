@@ -13,6 +13,19 @@ created: '2026-08-19'
 modified: '2026-08-19'
 specificationVersion: '0.21'
 tags:
+- Threat Intelligence
+- IP Reputation
+- abuse-database
+- Cybersecurity
+- OSINT
+- Network Security
+- sysadmin-tools
+- Blocklist
+- abuse-reporting
+- ip-blocklist
+- IP Intelligence
+- Threat Feeds
+tags_raw:
 - threat-intelligence
 - ip-reputation
 - abuse-database
@@ -33,6 +46,15 @@ apis:
   humanURL: https://sniffcat.com/documentation/api
   baseURL: https://api.sniffcat.com
   tags:
+  - Threat Intelligence
+  - IP Reputation
+  - abuse-database
+  - Cybersecurity
+  - OSINT
+  - Network Security
+  - sysadmin-tools
+  - Blocklist
+  tags_raw:
   - threat-intelligence
   - ip-reputation
   - abuse-database
