@@ -9,6 +9,17 @@ description: 'SniffCat is a privacy-focused IP abuse database and OSINT threat-i
   quotas per operation and trust levels that weight how much each reporter moves an IP''s score. The platform
   is in Early Access / open beta and publishes no machine-readable contract.'
 url: https://sniffcat.apievangelist.com/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 created: '2026-08-19'
 modified: '2026-08-19'
 specificationVersion: '0.21'
