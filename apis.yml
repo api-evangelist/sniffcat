@@ -25,17 +25,17 @@ modified: '2026-08-19'
 specificationVersion: '0.21'
 tags:
 - Threat Intelligence
-- ip-reputation
+- IP Reputation
 - abuse-database
 - Cybersecurity
 - OSINT
-- network-security
+- Network Security
 - sysadmin-tools
 - Blocklist
 - abuse-reporting
 - ip-blocklist
-- ip-intelligence
-- threat-feeds
+- IP Intelligence
+- Threat Feeds
 tags_raw:
 - threat-intelligence
 - ip-reputation
@@ -58,11 +58,11 @@ apis:
   baseURL: https://api.sniffcat.com
   tags:
   - Threat Intelligence
-  - ip-reputation
+  - IP Reputation
   - abuse-database
   - Cybersecurity
   - OSINT
-  - network-security
+  - Network Security
   - sysadmin-tools
   - Blocklist
   tags_raw:
