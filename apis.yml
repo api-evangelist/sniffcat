@@ -130,6 +130,8 @@ generated:
   confidence: 88
   at: '2026-08-19T02:43:05.010Z'
 common:
+- type: Website
+  url: https://www.sniffcat.com/
 - type: VulnerabilityDisclosure
   url: security/sniffcat-vulnerability-disclosure.yml
 - type: DomainSecurity
