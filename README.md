@@ -1,4 +1,4 @@
-# sniffcat
+# SniffCat
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,4 +64,105 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Privacy-focused IP abuse database and OSINT threat-intelligence platform for reporting and checking malicious IPs in real-time. Positioned as an AbuseIPDB-style community IP reputation service with a free, versioned REST API.
+SniffCat is a privacy-focused IP abuse database and OSINT threat-intelligence platform built by Polish developer Sefinek, positioned as a community-moderated AbuseIPDB alternative. Sysadmins, hosting providers, ISPs and security researchers report malicious IP addresses against a published 27-term abuse-category vocabulary, and consume the resulting reputation data through a free, versioned REST API at api.sniffcat.com: abuse-confidence lookups, per-IP report history, and score-ordered blocklist feeds in JSON or plain text for direct firewall ingestion. Entitlement is role-based rather than paid, with published daily quotas per operation and trust levels that weight how much each reporter moves an IP's score. The platform is in Early Access / open beta and publishes no machine-readable contract.
+
+**Areas:** Threat Intelligence · IP Reputation · abuse-database · Cybersecurity · OSINT · Network Security · sysadmin-tools · Blocklist · abuse-reporting · ip-blocklist · IP Intelligence · Threat Feeds
+
+## SniffCat on APIs.io
+
+Everything profiled for SniffCat is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/sniffcat/](https://apis.io/providers/sniffcat/)** — or go straight to one of the APIs or properties below.
+
+### APIs (1)
+
+- [SniffCat REST API](https://apis.io/apis/sniffcat/sniffcat-rest-api/) — Documented, versioned REST API (/api/v1/*) for checking IPs, retrieving blacklist feeds and report history, and submitting abuse reports. Uses…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Sniffcat Authentication](https://apis.io/security/sniffcat/sniffcat-authentication/)
+- [Sniffcat Domain Security](https://apis.io/security/sniffcat/sniffcat-domain-security/)
+- [Sniffcat Vulnerability Disclosure](https://apis.io/security/sniffcat/sniffcat-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Sniffcat Plans Pricing](https://apis.io/plans/sniffcat/sniffcat-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Sniffcat Rate Limits](https://apis.io/rate-limits/sniffcat/sniffcat-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.sniffcat.com/)
+- [Documentation](https://sniffcat.com/documentation)
+- [Getting started](https://sniffcat.com/documentation/api)
+- [API reference](https://sniffcat.com/documentation/api)
+- [Sign up](https://sniffcat.com/register)
+- [Support](https://sniffcat.com/tickets)
+- [Terms of service](https://sniffcat.com/terms-of-use)
+- [GitHub](https://github.com/SniffCatDB)
+- [Status](https://status.sniffcat.com/)
+
+## API Evangelist rating
+
+**Kin Score 36.1** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 0.0 |
+| Contract governance | 19.7 |
+| Operational transparency | 52.6 |
+| Developer ergonomics | 69.0 |
+| Access clarity | 23.7 |
+
+**Agent readiness 7.9** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 26.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/sniffcat/](https://apis.io/providers/sniffcat/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for SniffCat: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/sniffcat/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
